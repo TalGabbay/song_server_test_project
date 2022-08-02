@@ -22,19 +22,18 @@ r = api_calls.get_user('Tal Gabbay')
 # api_calls.set_users_into_the_db()
 
 
-password = "Tal"
-b = r.text
-m = re.search(password, b)
-print(m.group(0))
 
 
-playlist = "gababaggds"
+playlist = "ff"
+
+
 def t_add_playlist(playlist):
     add_user_response = api_calls.add_user("User1", "User1")
     get_user_response = api_calls.get_user("User1")
-    add_playlist_response = api_calls.add_playlist("User1", "User1", playlist)
+    add_playlist_response = api_calls.add_friend("User1", "User1", playlist)
     json_format = json.loads(get_user_response.text)
-    print(json_format["data"]["playlists"])
+    print(json_format["data"]["friends"][0])
+
 
 
 t_add_playlist(playlist)
