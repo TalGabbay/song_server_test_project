@@ -1,8 +1,5 @@
-from src.logic_layer import api_calls
+from logic_layer import api_calls
 from src.logic_layer import helpers
-import json
-import re
-
 
 api_calls.add_user('Tal Gabbay', 'tg')
 r = api_calls.get_user('Tal Gabbay')

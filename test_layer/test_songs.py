@@ -1,6 +1,6 @@
 import pytest
 import json
-from src.logic_layer import api_calls
+from logic_layer import api_calls
 
 
 @pytest.mark.song

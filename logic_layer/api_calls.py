@@ -1,4 +1,4 @@
-from src.infrastructure_layer import rest_functions
+from infrastructure_layer import rest_functions
 
 
 # User Handling Methods

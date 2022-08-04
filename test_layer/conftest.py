@@ -1,5 +1,5 @@
 import pytest
-from src.logic_layer import api_calls
+from logic_layer import api_calls
 
 
 @pytest.fixture()
