@@ -12,13 +12,13 @@ def add_user(user_name, user_password):
     response = rest_functions.post('/users/add_user', data)
     return response
 
+
 def get_user(user_name):
     data = {
         "user_name": user_name
     }
     response = rest_functions.get('/users/get_user', data)
     return response
-
 
 
 def add_friend(user_name, user_password, friend_name):
@@ -143,4 +143,3 @@ def set_songs_into_the_db(song_list):
 def set_users_into_the_db(user_list):
     response = rest_functions.post('/admin/set_users', user_list)
     return response
-

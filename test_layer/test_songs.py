@@ -3,6 +3,7 @@ import json
 from src.logic_layer import api_calls
 
 
+@pytest.mark.song
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("a", "1", "c", "d"),
                           ("bob", "1970", "reggae", "is this love")])
@@ -16,6 +17,7 @@ def test_add_songs(song_genre, song_year, song_performer, song_name, delete_song
                                                  f"after adding the song"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("", "1970", "reggae", "is this love"),
@@ -33,6 +35,7 @@ def test_add_songs_empty_fields(song_genre, song_year, song_performer, song_name
                                                  f"after adding a song with an empty field"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("bob", "#$%^&", "reggae", "is this love"),
@@ -48,6 +51,7 @@ def test_add_songs_illegal_year(song_genre, song_year, song_performer, song_name
                                                  f"after adding a song with illegal year field"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("a", "1", "c", "d"),
@@ -61,9 +65,10 @@ def test_add_same_songs_twice(song_genre, song_year, song_performer, song_name, 
     add_second_songs_response = api_calls.add_song(song_genre, song_year, song_performer, song_name)
     assert add_second_songs_response.status_code != 200, f"Error: add songs responded " \
                                                          f"{add_second_songs_response.status_code}" \
-                                                         f"for adding an existing identical song"
+                                                         f"for adding an  identical song"
 
 
+@pytest.mark.song
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("a", "1", "c", "d"),
                           ("bob", "1970", "reggae", "is this love")])
@@ -81,13 +86,16 @@ def test_get_song(song_genre, song_year, song_performer, song_name, delete_songs
                                                       f" name that was added"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
-def test_get_un_existing_song(delete_songs):
+def test_get_nonexistent_song(delete_songs):
     assert delete_songs.status_code == 200, f"Bad Response"
     get_song_response = api_calls.get_song("song_name")
-    assert get_song_response.status_code != 200, "Error: get song response for an un existing song is 200"
+    assert get_song_response.status_code != 200, "Error: get song response for an un nonexistent song is 200"
 
 
+@pytest.mark.playlist
+@pytest.mark.song
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("a", "1", "c", "d"),
                           ("bob", "1970", "reggae", "is this love")])
@@ -109,8 +117,10 @@ def test_add_song_to_playlist(song_genre, song_year, song_performer, song_name, 
     json_format["data"][0]["title"] == song_name, f"Error: song name in playlist is different than input"
 
 
+@pytest.mark.playlist
+@pytest.mark.song
 @pytest.mark.xfail
-def test_add_unexisting_song_to_playlist(delete_songs, delete_users):
+def test_add_nonexistent_song_to_playlist(delete_songs, delete_users):
     assert delete_songs.status_code == 200, "Bad response"
     assert delete_users.status_code == 200, "Bad response"
     add_user_response = api_calls.add_user("User1", "User1")
@@ -119,9 +129,11 @@ def test_add_unexisting_song_to_playlist(delete_songs, delete_users):
     assert add_playlist_response.status_code == 200, f'Error: Adding playlist to user responded 200'
     add_song_to_playlist_response = api_calls.add_song_to_playlist("User1", "User1", "playlist", "song_name")
     assert add_song_to_playlist_response.status_code != 200, "Error: add song to playlist is 200 for an " \
-                                                             "non existing song"
+                                                             "non nonexistent song"
 
 
+@pytest.mark.playlist
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("a", "1", "c", "d"),
@@ -139,10 +151,12 @@ def test_add_same_song_twice_to_playlist(song_genre, song_year, song_performer, 
     add_song_to_playlist_response = api_calls.add_song_to_playlist("User1", "User1", "playlist", song_name)
     assert add_song_to_playlist_response.status_code == 200, "Error: add song to playlist bad response for lligal input"
     second_add_song_to_playlist_response = api_calls.add_song_to_playlist("User1", "User1", "playlist", song_name)
-    assert second_add_song_to_playlist_response.status_code != 200, "Error: add an existing song to playlist" \
+    assert second_add_song_to_playlist_response.status_code != 200, "Error: add an nonexistent song to playlist" \
                                                                     "responded 200"
 
 
+@pytest.mark.playlist
+@pytest.mark.song
 @pytest.mark.xfail
 def test_add_empty_song_to_playlist(delete_songs, delete_users):
     assert delete_songs.status_code == 200, "Bad response"
@@ -156,6 +170,7 @@ def test_add_empty_song_to_playlist(delete_songs, delete_users):
                                                              " response is 200"
 
 
+@pytest.mark.song
 @pytest.mark.parametrize(("song_genre", "song_year", "song_performer", "song_name"),
                          [("a", "1", "c", "d"),
                           ("bob", "1970", "reggae", "is this love")])
@@ -170,6 +185,7 @@ def test_songs_rate_starts_zero(song_genre, song_year, song_performer, song_name
     assert rate == 0, f"Error: new song rate {rate} is different than zero"
 
 
+@pytest.mark.song
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
                           ("George", "Bush", "reggae", "is this love")])
@@ -191,11 +207,12 @@ def test_songs_upvote(user_name, user_password, playlist, song_title, delete_son
     assert rate == 1, f"Error: new song rate {rate} is different than one after exactly one vote"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
                           ("George", "Bush", "reggae", "is this love")])
-def test_songs_upvote_non_existing_song(user_name, user_password, playlist, song_title, delete_songs, delete_users):
+def test_songs_upvote_non_nonexistent_song(user_name, user_password, playlist, song_title, delete_songs, delete_users):
     assert delete_songs.status_code == 200, f"Bad Response"
     assert delete_users.status_code == 200, "Bad response"
     add_user_response = api_calls.add_user(user_name, user_password)
@@ -203,9 +220,10 @@ def test_songs_upvote_non_existing_song(user_name, user_password, playlist, song
     add_playlist_response = api_calls.add_playlist(user_name, user_password, playlist)
     assert add_playlist_response.status_code == 200, f'Error: Adding playlist to user responded 200'
     song_upvote_response = api_calls.song_upvote(user_name, user_password, playlist, song_title)
-    assert song_upvote_response.status_code != 200, f"Error: song upvote response 200 for non existing song"
+    assert song_upvote_response.status_code != 200, f"Error: song upvote response 200 for non nonexistent song"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "user_password", "song_title"),
                          [("Tal", "Gabbay", "kashmir"),
@@ -227,6 +245,8 @@ def test_songs_upvote_not_on_playlist(user_name, user_password, song_title, dele
     assert rate == 0, f"Error: new song rate {rate} had been changed without being assigned to a playlist"
 
 
+@pytest.mark.song
+@pytest.mark.security
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
@@ -250,6 +270,8 @@ def test_song_upvote_wrong_password(user_name, user_password, playlist, song_tit
     assert rate == 0, f"Error: new song rate {rate} change after upvote with incorrect password"
 
 
+@pytest.mark.song
+@pytest.mark.security
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
@@ -273,6 +295,7 @@ def test_song_upvote_wrong_user_name(user_name, user_password, playlist, song_ti
     assert rate == 0, f"Error: new song rate {rate} change after upvote with wrong_user_name"
 
 
+@pytest.mark.song
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
@@ -298,6 +321,7 @@ def test_songs_upvote_twice_same_user(user_name, user_password, playlist, song_t
     assert rate == 1, f"Error: new song rate {rate} had changed after voting for the second time with the same user"
 
 
+@pytest.mark.song
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
                           ("George", "Bush", "reggae", "is this love")])
@@ -321,6 +345,8 @@ def test_songs_downvote(user_name, user_password, playlist, song_title, delete_s
     assert rate == 0, f"Error: Initial rate had stayed the same after downvote function"
 
 
+@pytest.mark.song
+@pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
                           ("George", "Bush", "reggae", "is this love")])
@@ -347,6 +373,7 @@ def test_songs_downvote_to_sub_zero(user_name, user_password, playlist, song_tit
 # Mirror all the tests for upvote.... too much black work ):
 
 
+@pytest.mark.song
 @pytest.mark.parametrize(("user_name", "user_password", "playlist", "song_title"),
                          [("Tal", "Gabbay", "play1", "kashmir"),
                           ("George", "Bush", "reggae", "is this love")])

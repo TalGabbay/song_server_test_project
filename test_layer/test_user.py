@@ -1,9 +1,10 @@
 import pytest
 import json
 import re
-from src.logic_layer import api_calls
+from src.logic_layer import api_calls, helpers
 
 
+@pytest.mark.user
 @pytest.mark.parametrize("user_name", ["a",
                                        "A",
                                        "aaa",
@@ -18,6 +19,7 @@ def test_add_user(user_name, delete_users):
     assert server_user_name == user_name, f'Error: User name assertion fail expected {user_name} returned {server_user_name}'
 
 
+@pytest.mark.user
 @pytest.mark.xfail
 @pytest.mark.parametrize("user_name", ["a",
                                        "A",
@@ -31,6 +33,7 @@ def test_get_nonexistent_user(user_name, delete_users):
 
 
 # cannot be tested because the get_unexisting user isn't working well
+@pytest.mark.user
 @pytest.mark.xfail
 @pytest.mark.parametrize("user_name", ["a",
                                        "A",
@@ -49,6 +52,7 @@ def test_delete_user(user_name, delete_users):
     assert get_user_response.status_code != 200, f'Error: getuser returned status code 200 after deletion'
 
 
+@pytest.mark.user
 @pytest.mark.xfail
 @pytest.mark.parametrize("user_name", ["",
                                        "1",
@@ -60,6 +64,7 @@ def test_add_illigal_user(user_name, delete_users):
     assert set_user.status_code != 200, f'Error: system excepted {user_name} as user_name'
 
 
+@pytest.mark.user
 @pytest.mark.xfail
 @pytest.mark.parametrize("user_name", ["Tal",
                                        "tal",
@@ -75,6 +80,7 @@ def test_add_user_with_same_name(user_name, delete_users):
                                         f' returned {set_user.status_code}'
 
 
+@pytest.mark.user
 @pytest.mark.parametrize(("user_name1", "user_name2"),
                          [("Tal", "tal"),
                           ("a", "A"),
@@ -89,6 +95,8 @@ def test_add_user_with_almost_same_name(user_name1, user_name2, delete_users):
                                                  f' {set_user_response.status_code}'
 
 
+@pytest.mark.user
+@pytest.mark.security
 @pytest.mark.parametrize(("user_name", "password"),
                          [("Tal", "123"),
                           ("a", "A"),
@@ -101,6 +109,8 @@ def test_get_user_password(user_name, password, delete_users):
     assert not match, f'Error: get user response contains the user password {match.group(0)}'
 
 
+@pytest.mark.user
+@pytest.mark.security
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "password"),
                          [("Tal", "123"),
@@ -115,6 +125,8 @@ def test_change_user_password_using_wrong_password(user_name, password, delete_u
                                                         f' status code 200'
 
 
+@pytest.mark.user
+@pytest.mark.security
 @pytest.mark.parametrize(("user_name", "password", "new_password"),
                          [("Tal", "123", "321"),
                           ("a", "A", "567"),
@@ -131,6 +143,8 @@ def test_change_user_password(user_name, password, new_password, delete_users):
                                                         f' expected 200 using the new password after changing it'
 
 
+@pytest.mark.user
+@pytest.mark.security
 @pytest.mark.xfail
 @pytest.mark.parametrize(("user_name", "password", "new_password"),
                          [("Tal", "123", "321"),
@@ -148,6 +162,7 @@ def test_change_user_password_using_old_password(user_name, password, new_passwo
                                                         f' old password can still be used after changing passwords'
 
 
+@pytest.mark.user
 @pytest.mark.parametrize(("user1", "user2"),
                          [("Tal", "moses"),
                           ("a", "b"),
@@ -166,9 +181,11 @@ def test_add_friend(user1, user2, delete_users):
     get_user1_response = api_calls.get_user(user1)
     json_format = json.loads(get_user1_response.text)
     json_format["data"]["friends"]
-    assert json_format["data"]["friends"][0] == user2, f'Error: get user response do not contains the added friend {match.group(0)}'
+    assert json_format["data"]["friends"][0] == user2, f'Error: get user response does not contains' \
+                                                       f' the added friend {user2}'
 
 
+@pytest.mark.user
 @pytest.mark.xfail
 @pytest.mark.parametrize("user_name", ["a",
                                        "A",
@@ -181,9 +198,10 @@ def test_add_unexisting_friend(user_name, delete_users):
     assert set_user1_response.status_code == 200, f'Error: expected status code 200 returned ' \
                                                   f'{set_user1_response.status_code}'
     add_friend_response = api_calls.add_friend(user_name, "1", "user_friend")
-    assert add_friend_response.status_code != 200, f'Error: adding unexisting friend responded 200'
+    assert add_friend_response.status_code != 200, f'Error: adding nonexistent friend responded 200'
 
 
+@pytest.mark.user
 @pytest.mark.xfail
 @pytest.mark.parametrize("user_name", ["aaa",
                                        "Tal",
@@ -197,5 +215,5 @@ def test_add_friend_with_wrong_password(user_name, delete_users):
     assert add_friend_response.status_code != 200, f'Error: adding a friend  with wrong password responded 200'
     get_user_response = api_calls.get_user(user_name)
     json_format = json.loads(get_user_response.text)
-    json_format["data"]["friends"]
-    assert json_format["data"]["friends"][0] == "user_friend", f'Error: get user response do not contains the added friend'
+    get_user_json = json_format["data"]["friends"]
+    assert get_user_json[0] == "user_friend", f'Error: get user response do not contains the added friend'
