@@ -1,9 +1,18 @@
 import requests
+import os
+from project_definitions import ROOT_DIR
+from configparser import ConfigParser
+
+file = os.path.join(ROOT_DIR, "config.ini")
+config = ConfigParser()
+config.read(file)
+
+url = config["server_info"]["url"]
+port = config["server_info"]["port"]
+host = "http://"+url+":"+port
 
 
-url = 'http://127.0.0.1'
-port = '3002'
-host = url+":"+port
+print(config["server_info"]["url"])
 
 
 def post(path, message):

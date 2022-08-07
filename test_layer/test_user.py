@@ -16,6 +16,7 @@ def test_add_user(user_name, delete_users):
     assert set_user.status_code == 200, f'Error: expected status code 200 returned {set_user.status_code}'
     user_response = api_calls.get_user(user_name)
     server_user_name = json.loads(user_response.text)['data']['user_name']
+#    print(user_response.json()['data']['user_name'])
     assert server_user_name == user_name, f'Error: User name assertion fail expected {user_name} returned {server_user_name}'
 
 
